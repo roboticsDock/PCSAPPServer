@@ -1,0 +1,30 @@
+{
+    "APIURL":{
+        "URL":"http://localhost:8080",
+        "PORT":"8080"
+    },
+    "DB":{
+        "MSSQL":{
+            "database":"PCS_Database",
+            "server" : "localhost",
+            "user":"SystemUser1",
+            "password":"System123",
+            "trustServerCertificate": true
+        },
+        "AWSMSSQL":{
+            "database":"PCS-DB-AWS",
+            "server" : "pcs-db-aws.csspaakhu7bb.us-east-1.rds.amazonaws.com",
+            "user":"sysuser",
+            "password":"sysuser@Robotics",
+            "trustServerCertificate": true
+        },
+        "MYSQL":{
+            
+        }
+    },   
+    "Env":{
+        "Dev":{},
+        "Uat":{},
+        "Prod":{}
+    }
+}
