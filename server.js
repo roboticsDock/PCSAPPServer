@@ -147,9 +147,9 @@ app.post("/api/InsertInv",(req, res) => {
         return pool.request()
         .query(sqlInsertRows, (err,result) => { 
             if (err) {
-                res.sendStatus(500);
+                res.status(200).send('OK')
             } else {
-                res.sendStatus(200);
+                res.status(500).send('Internal Server Error')
             }
         })   
     })
