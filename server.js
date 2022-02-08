@@ -5,7 +5,7 @@ const app = express();
 //const router = express.Router();
 const cors = require('cors');
 app.use(cors());
-
+app.use(cors({origin: '*'}));
 app.use(express.json());
 const bodyParser = require("body-parser");
 
