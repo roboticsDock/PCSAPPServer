@@ -79,8 +79,7 @@ app.post("/api/UpdateBarcodeScan",(req, res) => {
         return pool.request()
         .query(sqlGetRows, (err,result) => { 
             //console.log(result);
-            res.send(result);
-            return result;
+            res.status(200).send("");
         })   
     }) 
 })
