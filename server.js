@@ -79,7 +79,11 @@ app.post("/api/UpdateBarcodeScan",(req, res) => {
         return pool.request()
         .query(sqlGetRows, (err,result) => { 
             //console.log(result);
-            res.status(200).send("");
+            if (err) {
+                res.sendStatus(500);
+            } else {
+                res.sendStatus(200);
+            }
         })   
     }) 
 })
@@ -142,8 +146,11 @@ app.post("/api/InsertInv",(req, res) => {
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlInsertRows, (err,result) => { 
-            res.send(result);
-            return res;
+            if (err) {
+                res.sendStatus(500);
+            } else {
+                res.sendStatus(200);
+            }
         })   
     })
 })
