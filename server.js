@@ -143,10 +143,7 @@ app.post("/api/InsertInv",(req, res) => {
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlInsertRows, (err,result) => { 
-            if(result)
-                res.status(200).json({'status':HttpStatus.OK, 'message':'Data Uploaded'});
-            else(err)
-                res.status(500).json({error: "Internal server error"});  
+            res.status(200).json({status:"ok"})
             return res;
         })   
     })
