@@ -79,11 +79,8 @@ app.post("/api/UpdateBarcodeScan",(req, res) => {
         return pool.request()
         .query(sqlGetRows, (err,result) => { 
             //console.log(result);
-            if (err) {
-                res.sendStatus(500);
-            } else {
-                res.sendStatus(200);
-            }
+            res.send(result);
+            return result;
         })   
     }) 
 })
@@ -146,11 +143,11 @@ app.post("/api/InsertInv",(req, res) => {
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlInsertRows, (err,result) => { 
-            if (err) {
-                res.status(200).send('OK')
-            } else {
-                res.status(500).send('Internal Server Error')
-            }
+            if(result)
+                res.status(200).send(result);
+            else(err)
+                res.status(500).send(err);    
+            return res;
         })   
     })
 })
