@@ -5,8 +5,14 @@ const app = express();
 //const router = express.Router();
 const cors = require('cors');
 app.use('*', cors());
-app.use(express.json());
+
 const bodyParser = require("body-parser");
+
+app.use(bodyParser.urlencoded({
+    limit: "50mb",
+    extended: false
+  }));
+app.use(bodyParser.json({limit: "50mb"}));
 
 const mssql = require('mssql');
 
@@ -104,7 +110,66 @@ app.post("/api/RejectInventory",(req, res) => {
 
 
 
-app.post("/api/InsertInv",(req, res) => {
+app.post("/api/InsertInv", (req, res) => {
+    const excelData = req.body.data;
+    const fileType = req.body.FileType
+    const ClientID =req.body.clientID;
+    const userId =req.body.userID;
+    const pcsClient =req.body.PCSClient;
+    const DocType = (fileType) ? "Nucleus" : "IMOS";
+    const ScannedStatus ="No";
+
+    let InsNonNucleus = "";
+    let InsNucleus = "";
+
+    excelData.map((item,index) => { 
+        if(item[1] !== undefined) {
+            const OrderNo = item[0];
+            let OrderName = item[1];
+            OrderName = OrderName.replace(/'/g, `''`);
+            const OrderDate = item[2];
+            const Description = item[4];
+            const PartPositionNoBarcode = item[5];
+            const MaterialCode = (fileType) ? item[6] : item[7];
+            const CuttingWidth = item[16];
+            const CuttingLength = item[17];
+            const CuttingThickness = (fileType) ? item[9] : item[18];
+            const FinishedLength = (fileType) ? item[7] : item[19];
+            const FinishedWidth = (fileType) ? item[8] : item[20];
+            const InventoryDetailsJSON = JSON.stringify(item).replace(/'/g, `''`);
+            const Quantity = item[22];
+        
+        if(fileType){
+            InsNucleus += " "+
+            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"')"+
+            "INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingThickness,FinishedLength,FinishedWidth,PCSClient,DocType)"+
+            "VALUES ('"+ClientID+"','"+OrderName+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+pcsClient+"','"+DocType+"')"
+        
+        }else{
+            InsNonNucleus += " "+
+            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"')"+
+            "INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,OrderDate,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingWidth,CuttingLength,CuttingThickness,FinishedLength,FinishedWidth,Quantity,PCSClient,DocType)"+
+            "VALUES ('"+ClientID+"','"+OrderName+"','"+OrderDate+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingWidth+"','"+CuttingLength+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+Quantity+"','"+pcsClient+"','"+DocType+"')";
+        
+        }    
+        //console.log(sqlInsertRows)
+        
+            
+        }
+    })
+    res.setHeader("Content-Type", "text/html");
+        const sqlInsertRows = (fileType) ? InsNucleus : InsNonNucleus;
+        const db = mssql.connect(conn).then(pool => {
+            return pool.request()
+            .query(sqlInsertRows, (err,result) => {     
+                if(result)
+                    res.status(200).send({status: 'OK', message: "Excel Uploaded"});
+                else 
+                res.status(500).send({status: 'Failed', message: "Internal Server Error"}); 
+            })
+        })
+    //console.log(excelData)
+    /*
     const sqlInsert = "";
     const fileType = req.body.FileType
     const ClientID =req.body.clientID;
@@ -139,7 +204,7 @@ app.post("/api/InsertInv",(req, res) => {
 
     const sqlInsertRows = (fileType) ? InsNucleus : InsNonNucleus;
     
-    
+    /*
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlInsertRows, (err,result) => { 
@@ -147,9 +212,9 @@ app.post("/api/InsertInv",(req, res) => {
                 res.sendStatus(200)
             else
                 res.sendStatus(500)
-            //return res;
+            return res;
         })   
-    })
+    })*/
 })
 
 app.post("/api/rows",(req, res) => {
@@ -163,7 +228,6 @@ app.post("/api/rows",(req, res) => {
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlGetRows, (err,result) => { 
-            //console.log(result);
             res.send(result);
         })   
     }) 
