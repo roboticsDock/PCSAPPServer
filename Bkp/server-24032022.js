@@ -271,8 +271,8 @@ app.post("/api/deleteClient",(req, res) => {
 
 app.post("/api/GetCreds",(req, res) => {
     const UserName =req.body.userName;
-    const sqlGetCreds = "Select C.Password Password,U.RoleID Role, Cl.CID Client, L.ExpiryDate LicenseExpire from [Credentials] C "+
-                        "JOIN [Users] U ON(U.UID = C.PUID) JOIN [Client] Cl ON(Cl.CID = U.ClientID) JOIN [License] L ON(Cl.CID = L.ClientID) where [PUID] = (Select [UID] from [Users] where [UserName] = '"+UserName+"')"
+    const sqlGetCreds = "Select C.Password Password,U.RoleID Role, Cl.CID Client from [Credentials] C "+
+                        "JOIN [Users] U ON(U.UID = C.PUID) JOIN [Client] Cl ON(Cl.CID = U.ClientID) where [PUID] = (Select [UID] from [Users] where [UserName] = '"+UserName+"')"
     //Select [Password] from [Credentials] where [PUID] = (Select [UID] from [Users] where [UserName] = '"+UserName+"')";
     //console.log(sqlGetCreds)
     const db = mssql.connect(conn).then(pool => {
@@ -373,19 +373,16 @@ app.get("/api/GetClientList",(req, res) => {
 
 app.post("/api/GetClientIDReport",(req, res) => {
     const pcsClient = req.body.PCSClient
-    let checkAdmin = (pcsClient !== 22) ? "AND P.PCSClient="+pcsClient+"" : ""
+    let checkAdmin = (pcsClient !== 22) ? "where PCSClient="+pcsClient+"" : ""
     const sqlClientIDReport = "Select distinct ClientID As 'ClientID', Count(*) as 'Total Records',"+
                             "Count(case when ScannedStatus = 'Scanned' then 1 else null end) as 'Total Scanned',"+
                             "Count(case when ScannedStatus = 'No' then 1 else null end) as 'Total UnScanned',"+
                             "MAX(FORMAT(UploadedTimeStamp, 'dd-MM-yyyy')) As 'Uploaded Date',"+
-                            "MAX(FORMAT(ScannedTimeStamp, 'dd-MM-yyyy')) As 'Scanned Date',"+                            
-							"MAX(C.ClientName) As 'PCS Client'"+
-                            "from [ProductInventoryDetails] P,Client C where P.PCSClient=C.CID "+checkAdmin+" GROUP by ClientID"
-                            //console.log(sqlClientIDReport)                        
+                            "MAX(FORMAT(ScannedTimeStamp, 'dd-MM-yyyy')) As 'Scanned Date'"+
+                            "from [ProductInventoryDetails] "+checkAdmin+" GROUP by ClientID" ;
     const db = mssql.connect(conn).then(pool => {
         return pool.request()
         .query(sqlClientIDReport, (err,result) => { 
-            //console.log(result)
             res.send(result);
         })   
     })
@@ -451,25 +448,6 @@ app.post("/api/DeleteClientList",(req, res) => {
 
 })
 
-
-// Get License Details
-
-// Get Complete Records
-
-app.post("/api/GetLicenseDetails",(req, res) => {
-    const pcsClient = req.body.PCSClient;
-    const sqlGetLicenseDetails = "SELECT ExpiryDate FROM [dbo].[License] where ClientID = "+pcsClient;
-    const db = mssql.connect(conn).then(pool => {
-        return pool.request()
-        .query(sqlGetLicenseDetails, (err,result) => { 
-            res.send(result);
-            //console.log(result)
-        })   
-    })
-
-})
-
-
 app.get('/', (req, res) => {
-    res.send('Hello PCS APP!')
+    res.send('Hello World!')
   });
