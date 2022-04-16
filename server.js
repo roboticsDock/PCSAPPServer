@@ -121,7 +121,6 @@ app.post("/api/InsertInv", (req, res) => {
 
     let InsNonNucleus = "";
     let InsNucleus = "";
-
     excelData.map((item,index) => { 
         if(item[1] !== undefined) {
             const OrderNo = item[0];
@@ -141,20 +140,17 @@ app.post("/api/InsertInv", (req, res) => {
         
         if(fileType){
             InsNucleus += " "+
-            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"')"+
-            "INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingThickness,FinishedLength,FinishedWidth,PCSClient,DocType)"+
-            "VALUES ('"+ClientID+"','"+OrderName+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+pcsClient+"','"+DocType+"')"
+            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"' and ClientID = '"+ClientID+"')"+
+            " INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingThickness,FinishedLength,FinishedWidth,PCSClient,DocType)"+
+            " VALUES ('"+ClientID+"','"+OrderName+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+pcsClient+"','"+DocType+"')"
         
         }else{
             InsNonNucleus += " "+
-            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"')"+
-            "INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,OrderDate,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingWidth,CuttingLength,CuttingThickness,FinishedLength,FinishedWidth,Quantity,PCSClient,DocType)"+
-            "VALUES ('"+ClientID+"','"+OrderName+"','"+OrderDate+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingWidth+"','"+CuttingLength+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+Quantity+"','"+pcsClient+"','"+DocType+"')";
+            "IF NOT EXISTS(Select * from [ProductInventoryDetails] where PartPositionNoBarcode= '"+PartPositionNoBarcode+"' and ClientID = '"+ClientID+"')"+
+            " INSERT INTO [ProductInventoryDetails] (ClientID,OrderName,OrderDate,Description,PartPositionNoBarcode,InventoryDetailsJSON,ScannedStatus,UploadedBy,MaterialCode,CuttingWidth,CuttingLength,CuttingThickness,FinishedLength,FinishedWidth,Quantity,PCSClient,DocType)"+
+            " VALUES ('"+ClientID+"','"+OrderName+"','"+OrderDate+"','"+Description+"','"+PartPositionNoBarcode+"','"+InventoryDetailsJSON+"','"+ScannedStatus+"','"+userId+"','"+MaterialCode+"','"+CuttingWidth+"','"+CuttingLength+"','"+CuttingThickness+"','"+FinishedLength+"','"+FinishedWidth+"','"+Quantity+"','"+pcsClient+"','"+DocType+"')";
         
-        }    
-        //console.log(sqlInsertRows)
-        
-            
+        } 
         }
     })
     res.setHeader("Content-Type", "text/html");
