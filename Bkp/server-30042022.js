@@ -108,19 +108,6 @@ app.post("/api/RejectInventory",(req, res) => {
     }) 
 })
 
-app.post("/api/GetUnscannedList",(req, res) => {
-    const ClientID =req.body.clientID;
-    //console.log(req.body)
-    const sqlGetUnscannedList = "SELECT PartPositionNoBarcode,Description,OrderName,MaterialCode,CuttingWidth,CuttingLength,CuttingThickness FROM [ProductInventoryDetails] "+
-    "where ScannedStatus = 'No' and ClientID ='"+ClientID+"'";
-    const db = mssql.connect(conn).then(pool => {
-        return pool.request()
-        .query(sqlGetUnscannedList, (err,result) => {
-            res.send(result);
-        })   
-    }) 
-})
-
 
 
 app.post("/api/InsertInv", (req, res) => {
