@@ -34,6 +34,7 @@ const conn = {
     password: config.DB.AWSMSSQL.password,
     server: config.DB.AWSMSSQL.server, 
     database: config.DB.AWSMSSQL.database,
+    requestTimeout: 900000,
     trustServerCertificate: config.DB.AWSMSSQL.trustServerCertificate
 }
 
@@ -148,7 +149,7 @@ app.post("/api/InsertInv", (req, res) => {
             const CuttingThickness = (fileType) ? item[9] : item[18];
             const FinishedLength = (fileType) ? item[7] : item[19];
             const FinishedWidth = (fileType) ? item[8] : item[20];
-            const InventoryDetailsJSON = JSON.stringify(item).replace(/'/g, `''`);
+            const InventoryDetailsJSON = "Test";/*JSON.stringify(item).replace(/'/g, `''`);*/
             const Quantity = item[22];
         
         if(fileType){
@@ -166,11 +167,10 @@ app.post("/api/InsertInv", (req, res) => {
         } 
         }
     })
-    res.setHeader("Content-Type", "text/html");
         const sqlInsertRows = (fileType) ? InsNucleus : InsNonNucleus;
         const db = mssql.connect(conn).then(pool => {
             return pool.request()
-            .query(sqlInsertRows, (err,result) => {     
+            .query(sqlInsertRows, (err,result) => {   
                 if(result)
                     res.status(200).send({status: 'OK', message: "Excel Uploaded"});
                 else 
