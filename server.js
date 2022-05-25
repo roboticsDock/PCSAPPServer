@@ -126,11 +126,12 @@ app.post("/api/GetUnscannedList",(req, res) => {
 
 app.post("/api/InsertInv", (req, res) => {
     const excelData = req.body.data;
-    const fileType = req.body.FileType
+    const fileType = req.body.FileType;
+    const NewNucleus = req.body.NewNucleus;
     const ClientID =req.body.clientID;
     const userId =req.body.userID;
     const pcsClient =req.body.PCSClient;
-    const DocType = (fileType) ? "Nucleus" : "IMOS";
+    const DocType = (NewNucleus) ? "NewNucleus" : (fileType) ? "Nucleus" : "IMOS";
     const ScannedStatus ="No";
 
     let InsNonNucleus = "";
@@ -138,19 +139,19 @@ app.post("/api/InsertInv", (req, res) => {
     excelData.map((item,index) => { 
         if(item[1] !== undefined) {
             const OrderNo = item[0];
-            let OrderName = item[1];
+            let OrderName = (NewNucleus) ? item[36] : item[1];
             OrderName = OrderName.replace(/'/g, `''`);
-            const OrderDate = item[2];
-            const Description = item[4];
-            const PartPositionNoBarcode = item[5];
-            const MaterialCode = (fileType) ? item[6] : item[7];
-            const CuttingWidth = item[16];
-            const CuttingLength = item[17];
-            const CuttingThickness = (fileType) ? item[9] : item[18];
-            const FinishedLength = (fileType) ? item[7] : item[19];
-            const FinishedWidth = (fileType) ? item[8] : item[20];
+            const OrderDate = (NewNucleus) ? item[1] : item[2];
+            const Description = (NewNucleus) ? item[8] : item[4];
+            const PartPositionNoBarcode = (NewNucleus) ? item[9] : item[5];
+            const MaterialCode = (NewNucleus) ? item[37] : (fileType) ? item[6] : item[7];
+            const CuttingWidth = (NewNucleus) ? item[26] : item[16];
+            const CuttingLength = (NewNucleus) ? item[25] : item[17];
+            const CuttingThickness = (NewNucleus) ? item[27] : (fileType) ? item[9] : item[18];
+            const FinishedLength = (NewNucleus) ? item[28] : (fileType) ? item[7] : item[19];
+            const FinishedWidth = (NewNucleus) ? item[29] : (fileType) ? item[8] : item[20];
             const InventoryDetailsJSON = "Test";/*JSON.stringify(item).replace(/'/g, `''`);*/
-            const Quantity = item[22];
+            const Quantity = (NewNucleus) ? item[31] : item[22];
         
         if(fileType){
             InsNucleus += " "+
